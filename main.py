@@ -1,14 +1,12 @@
 # Code below created with the help of this tutorial: https://www.mongodb.com/developer/languages/python/python-quickstart-fastapi/
 
-from fastapi import FastAPI, Body, HTTPException, status
-from fastapi.responses import Response, JSONResponse
-from fastapi.encoders import jsonable_encoder
-from pydantic import BaseModel, Field, EmailStr
+from fastapi import FastAPI
+from pydantic import BaseModel, Field
 from bson import ObjectId
 from typing import Optional, List
 import motor.motor_asyncio
 
-client = motor.motor_asyncio.AsyncIOMotorClient("MONGODB_URI_HERE")
+client = motor.motor_asyncio.AsyncIOMotorClient("YOUR_CONNECTION_STRING")
 db = client.sample_geospatial
 
 app = FastAPI()
@@ -27,7 +25,6 @@ class PyObjectId(ObjectId):
     @classmethod
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
-
 
 # Define model
 # Set default value as None to avoid triggering error when there is no value for that field in MongoDB
@@ -74,6 +71,14 @@ class ShipwreckModel(BaseModel):
 async def list_shipwrecks():
     shipwrecks = await db["shipwrecks"].find().to_list(1000)
     return shipwrecks
+
+# Get a random shipwreck
+@app.get(
+    "/random", response_description="Get a random shipwreck", response_model=List[ShipwreckModel]
+)
+async def random_shipwreck():
+    random = await db["shipwrecks"].find_one({"depth": {'gte': 0.0}})
+    return random
 
 if __name__ == '__main__':
     uvicorn.run(app)
