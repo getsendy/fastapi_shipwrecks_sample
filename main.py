@@ -9,7 +9,7 @@ from bson import ObjectId
 from typing import Optional, List
 import motor.motor_asyncio
 
-client = motor.motor_asyncio.AsyncIOMotorClient("mongodb+srv://shelby:shelbytest@cluster0.3zfyo65.mongodb.net/test")
+client = motor.motor_asyncio.AsyncIOMotorClient("MONGODB_URI_HERE")
 db = client.sample_geospatial
 
 app = FastAPI()
